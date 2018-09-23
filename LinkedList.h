@@ -8,7 +8,7 @@
 
 struct node;
 void printList(struct node *head);
-void insertFirst(struct node **head, int data);
+void insert(struct node **head, int data);
 struct node* deleteFirst(struct node **head);
 bool isEmpty(struct node *head);
 int length(struct node *head);

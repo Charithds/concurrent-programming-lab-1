@@ -153,6 +153,7 @@ struct node* deleteFirst(struct node **head) {
    return tempLink;
 }
 
+/*
 void main()
 {
     struct node *head = NULL;
@@ -217,3 +218,4 @@ void main()
     }
 
 }
+*/
