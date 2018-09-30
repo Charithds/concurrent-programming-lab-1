@@ -1,11 +1,5 @@
 #include "LinkedList.h"
 
-struct node
-{
-    int data;
-    struct node *next;
-};
-
 // struct node *head = NULL;
 
 //display the list
@@ -138,19 +132,6 @@ struct node *delete (struct node **head, int data)
     }
 
     return current;
-}
-
-//delete first item
-struct node* deleteFirst(struct node **head) {
-
-   //save reference to first link
-   struct node *tempLink = *head;
-	
-   //mark next to first link as first 
-   *head = (*head)->next;
-	
-   //return the deleted link
-   return tempLink;
 }
 
 /*
