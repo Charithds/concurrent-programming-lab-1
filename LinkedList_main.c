@@ -1,10 +1,13 @@
 #include "LinkedList.h"
 #include <stdio.h>
 #include <time.h>
+#include <math.h>
 
 #define OP_MEMBER 0
 #define OP_INSERT 1
 #define OP_DEL 2
+
+#define TEST_SAMPLE_SIZE 25
 
 
 // A utility function to swap to integers 
@@ -116,6 +119,19 @@ double SerialMethod(struct node *head, int *random_numbers_array, int * op_seq, 
     return elapsed_time*1000;
 }
 
+void calculateStats(double * elapsedTimes, double *stats){
+    double sum=0, variance_sum=0, mean=0, std=0;
+    for(int i = 0; i < TEST_SAMPLE_SIZE; i++) sum += elapsedTimes[i];
+    
+    mean = sum/TEST_SAMPLE_SIZE;
+    
+    for(int i = 0; i < TEST_SAMPLE_SIZE; i++) variance_sum += pow(elapsedTimes[i]-mean, 2);
+
+    std = sqrt(variance_sum/TEST_SAMPLE_SIZE);
+    stats[0] = mean;
+    stats[1] = std;
+}
+
 int main (int argc, char* argv[]){
     //printf("%d ", argc);
     if(argc != 5) Usage(argv[0]);
@@ -124,8 +140,6 @@ int main (int argc, char* argv[]){
     /*Parameters of the program*/
     int n_init = 1000;
     int m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
-    
-    
 
     /*  Size of the random array is 2X the required length.
         We can use the extra elements in "member" calls. 
@@ -137,8 +151,30 @@ int main (int argc, char* argv[]){
     // The linked list
     struct node * head = NULL;
     
-    double elapsed_time = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
-    printf("elaped time: %f ", elapsed_time);
-    
+    // to calculate the number of times to run, we need some stats
+    double * elapsed_times, * test_stats, * stats;
+    elapsed_times = malloc(TEST_SAMPLE_SIZE*sizeof(double));
+    test_stats = malloc(2*sizeof(double));
+
+    for(int i=0; i< TEST_SAMPLE_SIZE; i++){ 
+        elapsed_times[i] = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
+    }
+    calculateStats(elapsed_times, test_stats);
+    // printf("elaped time mean: %f\n", test_stats[0]);
+    // printf("elaped time std: %f\n", test_stats[1]);
+    double run_expression = 100*1.96*test_stats[1]/(5*test_stats[0]);
+    int runs_required = ceil(pow(run_expression,2));
+    // printf("runs reqd: %d\n", runs_required);
+
+    free(elapsed_times);
+    elapsed_times = malloc(runs_required*sizeof(double));
+    stats = malloc(2*sizeof(double));
+    for(int i=0; i< runs_required; i++){ 
+        elapsed_times[i] = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
+    }
+    calculateStats(elapsed_times, stats);
+    printf("runs reqd: %d\n", runs_required);
+    printf("elaped time mean: %f\n", stats[0]);
+    printf("elaped time std: %f\n", stats[1]);
     return 0;
 }
