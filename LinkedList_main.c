@@ -166,7 +166,7 @@ int main (int argc, char* argv[]){
     // printf("elaped time std: %f\n", test_stats[1]);
     double run_expression = 100*1.96*test_stats[1]/(5*test_stats[0]);
     int runs_required = ceil(pow(run_expression,2));
-    runs_required = (runs_required > TEST_SAMPLE_SIZE) ? runs_required:TEST_SAMPLE_SIZE;
+    runs_required = (runs_required > TEST_SAMPLE_SIZE) ? runs_required:100;
     // printf("runs reqd: %d\n", runs_required);
 
     free(elapsed_times);
