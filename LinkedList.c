@@ -134,6 +134,18 @@ struct node *delete (struct node **head, int data)
     return current;
 }
 
+// delete the first item
+struct node* deleteFirst(struct node *head) {
+    //save reference to first link
+    struct node *tempLink = head;
+
+    //mark next to first link as first
+    head = head->next;
+    
+    //return the deleted link
+    return tempLink;
+}
+
 /*
 void main()
 {

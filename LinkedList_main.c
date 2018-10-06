@@ -60,12 +60,23 @@ int get_member_element(int N)
     return random_numbers_ar[rand()%N];
 }
 
-int main (){
+void Usage (char* prog_name) {
+   fprintf(stderr, "usage: %s <mMember> <mInsert> <mDelete> <thread_count>\n", prog_name);
+   exit(0);
+}
+
+double get_elapsed_time(clock_t start, clock_t end){
+    return (double)(end-start)/CLOCKS_PER_SEC;
+}
+
+int main (int argc, char* argv[]){
+    //printf("%d ", argc);
+    if(argc != 5) Usage(argv[0]);
     srand(time(NULL));
     
     /*Parameters of the program*/
     int n_init = 1000;
-    int m_ins = 50, m_del = 50, m_member = 9900;
+    int m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
     int total_ops = m_ins+m_del+m_member;
 
     /*  Size of the random array is 2X the required length.
@@ -88,8 +99,8 @@ int main (){
     init_linked_list(&head, n_init);
     *number_ar_current_pos = 1000;
     
-    // just a test var
-    int test = 0;
+    clock_t start, end;
+    start = clock();
     for(int i = 0; i < total_ops; i++){
         if(op_seq[i] == OP_MEMBER){
             struct node *element = member(head, get_member_element(random_ar_length));
@@ -97,17 +108,18 @@ int main (){
             // else printf("NULL\n");
         } else if(op_seq[i] == OP_INSERT){
             insert(&head, get_insert_element());
-            printf("insert\n");
-            // printf("%d", OP_INSERT);
+            //printf("insert\n");
         }else if(op_seq[i] == OP_DEL){
             struct node *element = delete(&head, get_delete_element());
-            if(element != NULL) printf("delete %d\n", element->data);
-            else printf("NULL\n");
-            // printf("%d", OP_DEL);
+            if(!element){
+                element = deleteFirst(head);
+            }
+            if(!element) printf("NULL\n");
         }
-        test++;
     }
-    printf("%d",test);
+    end = clock();
+    double elapsed_time = get_elapsed_time(start, end);
+    printf("Elapsed time %f ms\n", elapsed_time*1000);
     
     return 0;
 }
