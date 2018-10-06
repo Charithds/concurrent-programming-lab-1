@@ -6,7 +6,6 @@
 #define OP_INSERT 1
 #define OP_DEL 2
 
-int * random_numbers_ar, * number_ar_current_pos;
 
 // A utility function to swap to integers 
 void swap (int *a, int *b){ 
@@ -35,29 +34,29 @@ void generate_operation_sequence(int * op_seq, int member, int insert, int del){
 }
 
 // Initializes the linked list to given size
-void init_linked_list(struct node **head, int length)
+void init_linked_list(struct node **head, int length, int *random_numbers_array)
 {
     for(int i = 0; i < length; i++){
-        insert(head, random_numbers_ar[i]);
+        insert(head, random_numbers_array[i]);
     }
 }
 
 // Returns the next insert element 
-int get_insert_element()
+int get_insert_element(int * random_numbers_array, int *random_array_current_pos)
 {
-    return random_numbers_ar[(*number_ar_current_pos)++];
+    return random_numbers_array[(*random_array_current_pos)++];
 }
 
 // Returns the next delete element
-int get_delete_element()
+int get_delete_element(int * random_numbers_array, int *random_array_current_pos)
 {
-    return random_numbers_ar[rand()%((*number_ar_current_pos)--)];
+    return random_numbers_array[rand()%((*random_array_current_pos)--)];
 }
 
 // Returns the next member element
-int get_member_element(int N)
+int get_member_element(int *random_numbers_array, int N)
 {
-    return random_numbers_ar[rand()%N];
+    return random_numbers_array[rand()%N];
 }
 
 void Usage (char* prog_name) {
@@ -69,6 +68,54 @@ double get_elapsed_time(clock_t start, clock_t end){
     return (double)(end-start)/CLOCKS_PER_SEC;
 }
 
+double SerialMethod(struct node *head, int *random_numbers_array, int * op_seq, int * random_array_current_pos, int n_init, int m_member, int m_ins, int m_del){
+    int random_array_length = 2 * (n_init + m_ins);
+    int total_ops = m_ins+m_del+m_member;
+
+    random_array_current_pos = malloc(sizeof(int));
+    *random_array_current_pos=0;
+    
+    random_numbers_array = malloc(sizeof(int)*random_array_length);
+    for(int i = 0; i < random_array_length; i++){
+        random_numbers_array[i] = rand();
+    }
+
+    op_seq = malloc(total_ops*sizeof(int));
+    generate_operation_sequence(op_seq, m_member, m_ins, m_del);
+    
+    init_linked_list(&head, n_init, random_numbers_array);
+    *random_array_current_pos = 1000;
+    
+    clock_t start, end;
+    start = clock();
+    for(int i = 0; i < total_ops; i++){
+        if(op_seq[i] == OP_MEMBER){
+            struct node *element = member(head, get_member_element(random_numbers_array, random_array_length));
+        } else if(op_seq[i] == OP_INSERT){
+            insert(&head, get_insert_element(random_numbers_array, random_array_current_pos));
+        }else if(op_seq[i] == OP_DEL){
+            struct node *element = delete(&head, get_delete_element(random_numbers_array, random_array_current_pos));
+            if(!element){
+                element = deleteFirst(head);
+            }
+        }
+    }
+    end = clock();
+    double elapsed_time = get_elapsed_time(start, end);
+    
+    // free all the memory allocated
+    free(random_numbers_array);
+    free(random_array_current_pos);
+    free(op_seq);
+    struct node *curr;
+    while ((curr = head) != NULL) { // set curr to head, stop if list empty.
+        head = head->next;          // advance head to next element.
+        free (curr);                // delete saved pointer.
+    }
+
+    return elapsed_time*1000;
+}
+
 int main (int argc, char* argv[]){
     //printf("%d ", argc);
     if(argc != 5) Usage(argv[0]);
@@ -77,49 +124,21 @@ int main (int argc, char* argv[]){
     /*Parameters of the program*/
     int n_init = 1000;
     int m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
-    int total_ops = m_ins+m_del+m_member;
+    
+    
 
     /*  Size of the random array is 2X the required length.
         We can use the extra elements in "member" calls. 
-        Also the current size of the linked list can be used accordingly.   */
-    int random_ar_length = 2 * (n_init + m_ins);
-    number_ar_current_pos = malloc(sizeof(int));
-    *number_ar_current_pos=0;
+        Also the current size of the linked list can be used accordingly.
+        op_seq defines the operation sequence.   
+    */
+    int * random_numbers_array, * random_array_current_pos, * op_seq;
     
-    random_numbers_ar = malloc(sizeof(int)*random_ar_length);
-    for(int i = 0; i < random_ar_length; i++){
-        random_numbers_ar[i] = rand();
-    }
-
-    int * op_seq = malloc(total_ops*sizeof(int));
-    generate_operation_sequence(op_seq, m_member, m_ins, m_del);
-
     // The linked list
     struct node * head = NULL;
-    init_linked_list(&head, n_init);
-    *number_ar_current_pos = 1000;
     
-    clock_t start, end;
-    start = clock();
-    for(int i = 0; i < total_ops; i++){
-        if(op_seq[i] == OP_MEMBER){
-            struct node *element = member(head, get_member_element(random_ar_length));
-            // if(element != NULL) printf("member %d\n", element->data);
-            // else printf("NULL\n");
-        } else if(op_seq[i] == OP_INSERT){
-            insert(&head, get_insert_element());
-            //printf("insert\n");
-        }else if(op_seq[i] == OP_DEL){
-            struct node *element = delete(&head, get_delete_element());
-            if(!element){
-                element = deleteFirst(head);
-            }
-            if(!element) printf("NULL\n");
-        }
-    }
-    end = clock();
-    double elapsed_time = get_elapsed_time(start, end);
-    printf("Elapsed time %f ms\n", elapsed_time*1000);
+    double elapsed_time = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
+    printf("elaped time: %f ", elapsed_time);
     
     return 0;
 }
