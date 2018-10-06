@@ -121,15 +121,15 @@ double SerialMethod(struct node *head, int *random_numbers_array, int * op_seq, 
     return elapsed_time*1000;
 }
 
-void calculateStats(double * elapsedTimes, double *stats){
+void calculateStats(double * elapsedTimes, int count, double *stats){
     double sum=0, variance_sum=0, mean=0, std=0;
-    for(int i = 0; i < TEST_SAMPLE_SIZE; i++) sum += elapsedTimes[i];
+    for(int i = 0; i < count; i++) sum += elapsedTimes[i];
     
-    mean = sum/TEST_SAMPLE_SIZE;
+    mean = sum/count;
     
-    for(int i = 0; i < TEST_SAMPLE_SIZE; i++) variance_sum += pow(elapsedTimes[i]-mean, 2);
+    for(int i = 0; i < count; i++) variance_sum += pow(elapsedTimes[i]-mean, 2);
 
-    std = sqrt(variance_sum/TEST_SAMPLE_SIZE);
+    std = sqrt(variance_sum/count);
     stats[0] = mean;
     stats[1] = std;
 }
@@ -161,11 +161,12 @@ int main (int argc, char* argv[]){
     for(int i=0; i< TEST_SAMPLE_SIZE; i++){ 
         elapsed_times[i] = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
     }
-    calculateStats(elapsed_times, test_stats);
+    calculateStats(elapsed_times, TEST_SAMPLE_SIZE, test_stats);
     // printf("elaped time mean: %f\n", test_stats[0]);
     // printf("elaped time std: %f\n", test_stats[1]);
     double run_expression = 100*1.96*test_stats[1]/(5*test_stats[0]);
     int runs_required = ceil(pow(run_expression,2));
+    runs_required = (runs_required > TEST_SAMPLE_SIZE) ? runs_required:TEST_SAMPLE_SIZE;
     // printf("runs reqd: %d\n", runs_required);
 
     free(elapsed_times);
@@ -174,7 +175,7 @@ int main (int argc, char* argv[]){
     for(int i=0; i< runs_required; i++){ 
         elapsed_times[i] = SerialMethod(head, random_numbers_array, op_seq, random_array_current_pos, n_init, m_member, m_ins, m_del);
     }
-    calculateStats(elapsed_times, stats);
+    calculateStats(elapsed_times,runs_required, stats);
     printf("runs reqd: %d\n", runs_required);
     printf("elaped time mean: %f\n", stats[0]);
     printf("elaped time std: %f\n", stats[1]);
