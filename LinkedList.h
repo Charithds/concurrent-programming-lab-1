@@ -16,6 +16,6 @@ bool isEmpty(struct node *head);
 int length(struct node *head);
 struct node* member(struct node *head, int data);
 struct node* delete(struct node **head, int data);
-struct node* deleteFirst(struct node *head);
+struct node* deleteFirst(struct node **head);
 
 #endif

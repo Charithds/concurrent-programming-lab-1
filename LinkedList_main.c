@@ -99,11 +99,13 @@ double SerialMethod(struct node *head, int *random_numbers_array, int * op_seq, 
         }else if(op_seq[i] == OP_DEL){
             struct node *element = delete(&head, get_delete_element(random_numbers_array, random_array_current_pos));
             if(!element){
-                element = deleteFirst(head);
+                // printf("im here");
+                element = deleteFirst(&head);
             }
         }
     }
     end = clock();
+    // printf("final length of the linked list is %d\n", length(head));
     double elapsed_time = get_elapsed_time(start, end);
     
     // free all the memory allocated
