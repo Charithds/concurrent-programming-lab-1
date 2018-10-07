@@ -80,7 +80,7 @@ double get_elapsed_time(clock_t start, clock_t end){
     return (double)(end-start)/CLOCKS_PER_SEC;
 }
 
-void * linkedList_worker(void* args){
+void * linkedList_worker_mutex(void* args){
     // printf("IM here.\n");
     int tid = *((int*) args);
     int start = tid*ops_per_thread;
@@ -141,7 +141,7 @@ double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_co
         // printf("thread");
         int *tid = malloc(sizeof(int));
         *tid = i;
-        pthread_create(&(thread_handles[i]), NULL, linkedList_worker, tid);
+        pthread_create(&(thread_handles[i]), NULL, linkedList_worker_mutex, tid);
     }
 
     for(int i=0;i<thread_count;i++){
