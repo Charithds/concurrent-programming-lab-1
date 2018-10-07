@@ -3,10 +3,10 @@ gcc Lab_1.c LinkedList.c LinkedList.h -lm -pthread -o Lab_1.out
 
 ./Lab_1.out 9900 50 50 1 S
 ./Lab_1.out 9900 50 50 1 M
-./Lab_1.out 9900 50 50 1 RWL
+./Lab_1.out 9900 50 50 1 R
 ./Lab_1.out 9900 50 50 2 M
-./Lab_1.out 9900 50 50 2 RWL
+./Lab_1.out 9900 50 50 2 R
 ./Lab_1.out 9900 50 50 4 M
-./Lab_1.out 9900 50 50 4 RWL
+./Lab_1.out 9900 50 50 4 R
 ./Lab_1.out 9900 50 50 8 M
-./Lab_1.out 9900 50 50 8 RWL
+./Lab_1.out 9900 50 50 8 R
