@@ -177,7 +177,7 @@ int main (int argc, char* argv[]){
     }
     calculateStats(elapsed_times,runs_required, stats);
     printf("runs reqd: %d\n", runs_required);
-    printf("elaped time mean: %f\n", stats[0]);
-    printf("elaped time std: %f\n", stats[1]);
+    printf("elapsed time mean: %f milliseconds\n", stats[0]);
+    printf("elapsed time std: %f milliseconds\n", stats[1]);
     return 0;
 }
