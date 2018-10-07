@@ -7,6 +7,7 @@
 #define OP_MEMBER 0
 #define OP_INSERT 1
 #define OP_DEL 2
+#define MAX_NUM 65536
 
 #define READ_WRITE_LOCK "R"
 #define MUTEX "M"
@@ -14,7 +15,8 @@
 #define TEST_SAMPLE_SIZE 20
 
 int random_array_length, total_ops, ops_per_thread, thread_count;
-int * random_numbers_array, * random_array_current_pos, * op_seq;
+int * random_numbers_array, * random_array_current_pos;
+int n_init, m_ins, m_del, m_member;
     
 // The linked list
 struct node * head = NULL;
@@ -40,15 +42,6 @@ void randomize ( int arr[], int n ){
     } 
 }
 
-// A funtion to generate shuffled operation sequence
-void generate_operation_sequence(int * op_seq, int member, int insert, int del){
-    int total_ops = member+insert+del;
-    for(int i = 0; i < member; i++) op_seq[i] = OP_MEMBER;
-    for(int i = member; i < member+insert; i++) op_seq[i] = OP_INSERT;
-    for(int i = member+insert; i < total_ops; i++) op_seq[i] = OP_DEL;
-    randomize(op_seq, total_ops);
-}
-
 // Initializes the linked list to given size
 void init_linked_list(struct node **head, int length, int *random_numbers_array){
     for(int i = 0; i < length; i++){
@@ -65,11 +58,6 @@ int get_insert_element(){
 int get_delete_element(){
     return random_numbers_array[rand()%((*random_array_current_pos)--)];
 }
-
-// // Returns the next member element
-// int get_member_element(){
-//     return random_numbers_array[rand()%random_array_length];
-// }
 
 void Usage (char* prog_name) {
    fprintf(stderr, "Usage: %s <mMember> <mInsert> <mDelete> <thread_count> <prog_type (M,RWL or S)>\n", prog_name);
@@ -94,7 +82,7 @@ void calculateStats(double * elapsedTimes, int count, double *stats){
     stats[1] = std;
 }
 
-double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
+double SerialMethod(){
     srand(time(NULL));
     
     random_array_current_pos = malloc(sizeof(int));
@@ -104,9 +92,6 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     for(int i = 0; i < random_array_length; i++){
         random_numbers_array[i] = rand();
     }
-
-    op_seq = malloc(total_ops*sizeof(int));
-    generate_operation_sequence(op_seq, m_member, m_ins, m_del);
     
     init_linked_list(&head, n_init, random_numbers_array);
     *random_array_current_pos = 1000;
@@ -114,11 +99,12 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     clock_t start, end;
     start = clock();
     for(int i = 0; i < total_ops; i++){
-        if(op_seq[i] == OP_MEMBER){
-            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
-        } else if(op_seq[i] == OP_INSERT){
+        int prob = rand()%total_ops;
+        if(prob < m_member){
+            struct node *element = member(head, rand()%MAX_NUM);
+        } else if(prob < m_member+m_ins){
             insert(&head, get_insert_element());
-        }else if(op_seq[i] == OP_DEL){
+        }else{
             struct node *element = delete(&head, get_delete_element());
             if(!element){
                 // printf("im here");
@@ -133,7 +119,6 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     // free all the memory allocated
     free(random_numbers_array);
     free(random_array_current_pos);
-    free(op_seq);
     struct node *curr;
     while ((curr = head) != NULL) { // set curr to head, stop if list empty.
         head = head->next;          // advance head to next element.
@@ -144,21 +129,17 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
 }
 
 void * linkedList_worker_mutex(void* args){
-    // printf("IM here.\n");
-    int tid = *((int*) args);
-    int start = tid*ops_per_thread;
-    int end = (tid==thread_count-1) ? total_ops:(start+ops_per_thread);
-    // printf("worker %d", tid);
-    for(int i = start; i < end; i++){
-        if(op_seq[i] == OP_MEMBER){
+    for(int i = 0; i < ops_per_thread; i++){
+        int prob = rand()%total_ops;
+        if(prob < m_member){
             pthread_mutex_lock(&lock);
-            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
+            struct node *element = member(head, rand()%65536);
             pthread_mutex_unlock(&lock);
-        } else if(op_seq[i] == OP_INSERT){
+        } else if(prob < m_member+m_ins){
             pthread_mutex_lock(&lock);
             insert(&head, get_insert_element());
             pthread_mutex_unlock(&lock);
-        }else if(op_seq[i] == OP_DEL){
+        }else{
             pthread_mutex_lock(&lock);
             struct node *element = delete(&head, get_delete_element());
             if(!element){
@@ -169,7 +150,7 @@ void * linkedList_worker_mutex(void* args){
     }
 }
 
-double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
+double MutexMethod(){
     srand(time(NULL));
 
     random_array_current_pos = malloc(sizeof(int));
@@ -179,9 +160,6 @@ double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_co
     for(int i = 0; i < random_array_length; i++){
         random_numbers_array[i] = rand();
     }
-
-    op_seq = malloc(total_ops*sizeof(int));
-    generate_operation_sequence(op_seq, m_member, m_ins, m_del);
     
     init_linked_list(&head, n_init, random_numbers_array);
     *random_array_current_pos = 1000;
@@ -194,10 +172,7 @@ double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_co
     clock_t start, end;
     start = clock();
     for(int i=0;i<thread_count;i++){
-        // printf("thread");
-        int *tid = malloc(sizeof(int));
-        *tid = i;
-        pthread_create(&(thread_handles[i]), NULL, linkedList_worker_mutex, tid);
+        pthread_create(&(thread_handles[i]), NULL, linkedList_worker_mutex, NULL);
     }
 
     for(int i=0;i<thread_count;i++){
@@ -211,7 +186,6 @@ double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_co
     free(thread_handles);
     free(random_numbers_array);
     free(random_array_current_pos);
-    free(op_seq);
     struct node *curr;
     while ((curr = head) != NULL) { // set curr to head, stop if list empty.
         head = head->next;          // advance head to next element.
@@ -223,20 +197,17 @@ double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_co
 }
 
 void * linkedList_worker_rwlock(void* args){
-    // printf("IM here.\n");
-    int tid = *((int*) args);
-    int start = tid*ops_per_thread;
-    int end = (tid==thread_count-1) ? total_ops:(start+ops_per_thread);
-    for(int i = start; i < end; i++){
-        if(op_seq[i] == OP_MEMBER){
+    for(int i = 0; i < ops_per_thread; i++){
+        int prob = rand()%total_ops;
+        if(prob < m_member){
             pthread_rwlock_rdlock(&rwlock);
-            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
+            struct node *element = member(head, rand()%MAX_NUM);
             pthread_rwlock_unlock(&rwlock);
-        } else if(op_seq[i] == OP_INSERT){
+        } else if(prob < m_member + m_ins){
             pthread_rwlock_wrlock(&rwlock);
             insert(&head, get_insert_element());
             pthread_rwlock_unlock(&rwlock);
-        }else if(op_seq[i] == OP_DEL){
+        }else{
             pthread_rwlock_wrlock(&rwlock);
             struct node *element = delete(&head, get_delete_element());
             if(!element){
@@ -247,7 +218,7 @@ void * linkedList_worker_rwlock(void* args){
     }
 }
 
-double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
+double RWLockMethod(){
     srand(time(NULL));
 
     random_array_current_pos = malloc(sizeof(int));
@@ -257,9 +228,6 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
     for(int i = 0; i < random_array_length; i++){
         random_numbers_array[i] = rand();
     }
-
-    op_seq = malloc(total_ops*sizeof(int));
-    generate_operation_sequence(op_seq, m_member, m_ins, m_del);
     
     init_linked_list(&head, n_init, random_numbers_array);
     *random_array_current_pos = 1000;
@@ -272,9 +240,7 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
     clock_t start, end;
     start = clock();
     for(int i=0;i<thread_count;i++){
-        int *tid = malloc(sizeof(int));
-        *tid = i;
-        pthread_create(&(thread_handles[i]), NULL, &linkedList_worker_rwlock, tid);
+        pthread_create(&(thread_handles[i]), NULL, &linkedList_worker_rwlock, NULL);
     }
 
     for(int i=0;i<thread_count;i++){
@@ -288,7 +254,6 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
     free(thread_handles);
     free(random_numbers_array);
     free(random_array_current_pos);
-    free(op_seq);
     struct node *curr;
     while ((curr = head) != NULL) { // set curr to head, stop if list empty.
         head = head->next;          // advance head to next element.
@@ -304,8 +269,8 @@ int main (int argc, char* argv[]){
     if(argc != 6) Usage(argv[0]);
     
     /*Parameters of the program*/
-    int n_init = 1000;
-    int m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
+    n_init = 1000;
+    m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
     thread_count = atoi(argv[4]);
     char *program = argv[5];
 
