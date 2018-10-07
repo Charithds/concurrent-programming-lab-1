@@ -288,7 +288,6 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
     clock_t start, end;
     start = clock();
     for(int i=0;i<thread_count;i++){
-        printf("thread");
         int *tid = malloc(sizeof(int));
         *tid = i;
         pthread_create(&(thread_handles[i]), NULL, &linkedList_worker_rwlock, tid);
