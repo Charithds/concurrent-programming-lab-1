@@ -8,10 +8,10 @@
 #define OP_INSERT 1
 #define OP_DEL 2
 
-#define READ_WRITE_LOCK "RWL"
+#define READ_WRITE_LOCK "R"
 #define MUTEX "M"
 #define SERIAL "S"
-#define TEST_SAMPLE_SIZE 1
+#define TEST_SAMPLE_SIZE 20
 
 int random_array_length, total_ops, ops_per_thread, thread_count;
 int * random_numbers_array, * random_array_current_pos, * op_seq;
@@ -331,13 +331,13 @@ int main (int argc, char* argv[]){
     test_stats = malloc(2*sizeof(double));
 
     for(int i=0; i< TEST_SAMPLE_SIZE; i++){
-        if(strcmp(program, "R")==0){
+        if(strcmp(program, READ_WRITE_LOCK)==0){
             elapsed_times[i] = RWLockMethod(n_init, m_member, m_ins, m_del, thread_count);
             // printf("R\n");
-        }else if(strcmp(program, "M")==0){
+        }else if(strcmp(program, MUTEX)==0){
             elapsed_times[i] = MutexMethod(n_init, m_member, m_ins, m_del, thread_count);
             // printf("M\n");
-        }else if(strcmp(program, "S")==0){
+        }else if(strcmp(program, SERIAL)==0){
             // printf("S\n");
             elapsed_times[i] = SerialMethod(n_init, m_member, m_ins, m_del);
         }else{
@@ -357,13 +357,13 @@ int main (int argc, char* argv[]){
     elapsed_times = malloc(runs_required*sizeof(double));
     stats = malloc(2*sizeof(double));
     for(int i=0; i< runs_required; i++){ 
-        if(strcmp(program, "R")==0){
+        if(strcmp(program, READ_WRITE_LOCK)==0){
             // printf("R\n");
             elapsed_times[i] = RWLockMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, "M")==0){
+        }else if(strcmp(program, MUTEX)==0){
             // printf("M\n");
             elapsed_times[i] = MutexMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, "S")==0){
+        }else if(strcmp(program, SERIAL)==0){
             // printf("S\n");
             elapsed_times[i] = SerialMethod(n_init, m_member, m_ins, m_del);
         }
