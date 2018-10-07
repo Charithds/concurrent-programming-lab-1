@@ -1,0 +1,12 @@
+#!/bin/bash
+gcc Lab_1.c LinkedList.c LinkedList.h -lm -pthread -o Lab_1.out
+
+./Lab_1.out 9000 500 500 1 S
+./Lab_1.out 9000 500 500 1 M
+./Lab_1.out 9000 500 500 1 RWL
+./Lab_1.out 9000 500 500 2 M
+./Lab_1.out 9000 500 500 2 RWL
+./Lab_1.out 9000 500 500 4 M
+./Lab_1.out 9000 500 500 4 RWL
+./Lab_1.out 9000 500 500 8 M
+./Lab_1.out 9000 500 500 8 RWL
