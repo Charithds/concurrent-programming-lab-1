@@ -11,7 +11,7 @@
 #define READ_WRITE_LOCK "RWL"
 #define MUTEX "M"
 #define SERIAL "S"
-#define TEST_SAMPLE_SIZE 25
+#define TEST_SAMPLE_SIZE 1
 
 int random_array_length, total_ops, ops_per_thread, thread_count;
 int * random_numbers_array, * random_array_current_pos, * op_seq;
@@ -236,7 +236,6 @@ void * linkedList_worker_rwlock(void* args){
     int tid = *((int*) args);
     int start = tid*ops_per_thread;
     int end = (tid==thread_count-1) ? total_ops:(start+ops_per_thread);
-    // printf("worker %d", tid);
     for(int i = start; i < end; i++){
         if(op_seq[i] == OP_MEMBER){
             pthread_rwlock_rdlock(&rwlock);
@@ -289,10 +288,10 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
     clock_t start, end;
     start = clock();
     for(int i=0;i<thread_count;i++){
-        // printf("thread");
+        printf("thread");
         int *tid = malloc(sizeof(int));
         *tid = i;
-        pthread_create(&(thread_handles[i]), NULL, linkedList_worker_rwlock, tid);
+        pthread_create(&(thread_handles[i]), NULL, &linkedList_worker_rwlock, tid);
     }
 
     for(int i=0;i<thread_count;i++){
@@ -333,11 +332,14 @@ int main (int argc, char* argv[]){
     test_stats = malloc(2*sizeof(double));
 
     for(int i=0; i< TEST_SAMPLE_SIZE; i++){
-        if(strcmp(program, READ_WRITE_LOCK)){
+        if(strcmp(program, "R")==0){
             elapsed_times[i] = RWLockMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, MUTEX)){
+            // printf("R\n");
+        }else if(strcmp(program, "M")==0){
             elapsed_times[i] = MutexMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, SERIAL)){
+            // printf("M\n");
+        }else if(strcmp(program, "S")==0){
+            // printf("S\n");
             elapsed_times[i] = SerialMethod(n_init, m_member, m_ins, m_del);
         }else{
             printf("Wrong program argument");
@@ -356,15 +358,15 @@ int main (int argc, char* argv[]){
     elapsed_times = malloc(runs_required*sizeof(double));
     stats = malloc(2*sizeof(double));
     for(int i=0; i< runs_required; i++){ 
-        if(strcmp(program, READ_WRITE_LOCK)){
+        if(strcmp(program, "R")==0){
+            // printf("R\n");
             elapsed_times[i] = RWLockMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, MUTEX)){
+        }else if(strcmp(program, "M")==0){
+            // printf("M\n");
             elapsed_times[i] = MutexMethod(n_init, m_member, m_ins, m_del, thread_count);
-        }else if(strcmp(program, SERIAL)){
+        }else if(strcmp(program, "S")==0){
+            // printf("S\n");
             elapsed_times[i] = SerialMethod(n_init, m_member, m_ins, m_del);
-        }else{
-            printf("Wrong program argument");
-            exit(0);
         }
     }
     calculateStats(elapsed_times,runs_required, stats);
