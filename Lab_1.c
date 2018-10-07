@@ -97,9 +97,6 @@ void calculateStats(double * elapsedTimes, int count, double *stats){
 double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     srand(time(NULL));
     
-    random_array_length = 2 * (n_init + m_ins);
-    total_ops = m_ins+m_del+m_member;
-
     random_array_current_pos = malloc(sizeof(int));
     *random_array_current_pos=0;
     
@@ -174,13 +171,6 @@ void * linkedList_worker_mutex(void* args){
 
 double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
     srand(time(NULL));
-    /*  Size of the random array is 2X the required length.
-        We can use the extra elements in "member" calls. 
-        Also the current size of the linked list can be used accordingly.
-        op_seq defines the operation sequence.   
-    */
-    random_array_length = 2 * (n_init + m_ins);
-    total_ops = m_ins+m_del+m_member;
 
     random_array_current_pos = malloc(sizeof(int));
     *random_array_current_pos=0;
@@ -259,13 +249,6 @@ void * linkedList_worker_rwlock(void* args){
 
 double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
     srand(time(NULL));
-    /*  Size of the random array is 2X the required length.
-        We can use the extra elements in "member" calls. 
-        Also the current size of the linked list can be used accordingly.
-        op_seq defines the operation sequence.   
-    */
-    random_array_length = 2 * (n_init + m_ins);
-    total_ops = m_ins+m_del+m_member;
 
     random_array_current_pos = malloc(sizeof(int));
     *random_array_current_pos=0;
@@ -325,6 +308,9 @@ int main (int argc, char* argv[]){
     int m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
     thread_count = atoi(argv[4]);
     char *program = argv[5];
+
+    random_array_length = 2 * (n_init + m_ins);
+    total_ops = m_ins+m_del+m_member;
     
     // to calculate the number of times to run, we need some stats
     double * elapsed_times, * test_stats, * stats;
