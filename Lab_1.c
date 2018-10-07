@@ -371,7 +371,7 @@ int main (int argc, char* argv[]){
     }
     calculateStats(elapsed_times,runs_required, stats);
     printf("runs required: %d\n", runs_required);
-    printf("elapsed time mean: %f milliseconds\n", stats[0]);
-    printf("elapsed time std: %f milliseconds\n", stats[1]);
+    printf("mean: %f ", stats[0]);
+    printf("std: %f \n", stats[1]);
     return 0;
 }

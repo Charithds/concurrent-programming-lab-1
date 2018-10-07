@@ -1,12 +1,43 @@
 #!/bin/bash
 gcc Lab_1.c LinkedList.c LinkedList.h -lm -pthread -o Lab_1.out
-
+echo "9900"
 ./Lab_1.out 9900 50 50 1 S
 ./Lab_1.out 9900 50 50 1 M
 ./Lab_1.out 9900 50 50 1 R
+echo "    2 threads"
 ./Lab_1.out 9900 50 50 2 M
 ./Lab_1.out 9900 50 50 2 R
+echo "    4 threads"
 ./Lab_1.out 9900 50 50 4 M
 ./Lab_1.out 9900 50 50 4 R
+echo "    8 threads"
 ./Lab_1.out 9900 50 50 8 M
 ./Lab_1.out 9900 50 50 8 R
+
+echo "9000"
+./Lab_1.out 9000 500 500 1 S
+./Lab_1.out 9000 500 500 1 M
+./Lab_1.out 9000 500 500 1 R
+echo "    2 threads"
+./Lab_1.out 9000 500 500 2 M
+./Lab_1.out 9000 500 500 2 R
+echo "    4 threads"
+./Lab_1.out 9000 500 500 4 M
+./Lab_1.out 9000 500 500 4 R
+echo "    8 threads"
+./Lab_1.out 9000 500 500 8 M
+./Lab_1.out 9000 500 500 8 R
+
+echo "5000"
+./Lab_1.out 5000 2500 2500 1 S
+./Lab_1.out 5000 2500 2500 1 M
+./Lab_1.out 5000 2500 2500 1 R
+echo "    2 threads"
+./Lab_1.out 5000 2500 2500 2 M
+./Lab_1.out 5000 2500 2500 2 R
+echo "    4 threads"
+./Lab_1.out 5000 2500 2500 4 M
+./Lab_1.out 5000 2500 2500 4 R
+echo "    8 threads"
+./Lab_1.out 5000 2500 2500 8 M
+./Lab_1.out 5000 2500 2500 8 R
