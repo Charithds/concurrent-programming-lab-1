@@ -66,10 +66,10 @@ int get_delete_element(){
     return random_numbers_array[rand()%((*random_array_current_pos)--)];
 }
 
-// Returns the next member element
-int get_member_element(){
-    return random_numbers_array[rand()%random_array_length];
-}
+// // Returns the next member element
+// int get_member_element(){
+//     return random_numbers_array[rand()%random_array_length];
+// }
 
 void Usage (char* prog_name) {
    fprintf(stderr, "Usage: %s <mMember> <mInsert> <mDelete> <thread_count> <prog_type (M,RWL or S)>\n", prog_name);
@@ -118,7 +118,7 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     start = clock();
     for(int i = 0; i < total_ops; i++){
         if(op_seq[i] == OP_MEMBER){
-            struct node *element = member(head, get_member_element());
+            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
         } else if(op_seq[i] == OP_INSERT){
             insert(&head, get_insert_element());
         }else if(op_seq[i] == OP_DEL){
@@ -155,7 +155,7 @@ void * linkedList_worker_mutex(void* args){
     for(int i = start; i < end; i++){
         if(op_seq[i] == OP_MEMBER){
             pthread_mutex_lock(&lock);
-            struct node *element = member(head, get_member_element());
+            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
             pthread_mutex_unlock(&lock);
         } else if(op_seq[i] == OP_INSERT){
             pthread_mutex_lock(&lock);
@@ -240,7 +240,7 @@ void * linkedList_worker_rwlock(void* args){
     for(int i = start; i < end; i++){
         if(op_seq[i] == OP_MEMBER){
             pthread_rwlock_rdlock(&rwlock);
-            member(head, get_member_element());
+            struct node *element = member(head, random_numbers_array[rand()%random_array_length]);
             pthread_rwlock_unlock(&rwlock);
         } else if(op_seq[i] == OP_INSERT){
             pthread_rwlock_wrlock(&rwlock);
