@@ -50,7 +50,7 @@ void init_linked_list(struct node **head, int length, int *random_numbers_array)
 }
 
 void Usage (char* prog_name) {
-   fprintf(stderr, "Usage: %s <mMember> <mInsert> <mDelete> <thread_count> <prog_type (M,RWL or S)>\n", prog_name);
+   fprintf(stderr, "Usage: %s <total ops> <mMember> <mInsert> <mDelete> <thread_count> <prog_type (M,R or S)>\n", prog_name);
    printf("For the serial program <thread_count> will be ignored.");
    exit(0);
 }
@@ -256,14 +256,14 @@ double RWLockMethod(){
 
 int main (int argc, char* argv[]){
     //printf("%d ", argc);
-    if(argc != 6) Usage(argv[0]);
+    if(argc != 7) Usage(argv[0]);
     
     /*Parameters of the program*/
     n_init = 1000;
     total_ops = atoi(argv[1]);
-    m_ins = (int)(total_ops * atof(argv[2])), m_del = (int)(total_ops * atof(argv[3])), m_member = (int)(total_ops * atof(argv[1]));
-    thread_count = atoi(argv[4]);
-    char *program = argv[5];
+    m_ins = (int)(total_ops * atof(argv[3])), m_del = (int)(total_ops * atof(argv[4])), m_member = (int)(total_ops * atof(argv[2]));
+    thread_count = atoi(argv[5]);
+    char *program = argv[6];
 
     random_array_length = 2 * (n_init + m_ins);
     total_ops = m_ins+m_del+m_member;
