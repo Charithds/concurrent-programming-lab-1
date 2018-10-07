@@ -95,6 +95,7 @@ void calculateStats(double * elapsedTimes, int count, double *stats){
 }
 
 double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
+    srand(time(NULL));
     int random_array_length = 2 * (n_init + m_ins);
     int total_ops = m_ins+m_del+m_member;
 
@@ -171,7 +172,7 @@ void * linkedList_worker_mutex(void* args){
 }
 
 double MutexMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
-    
+    srand(time(NULL));
     /*  Size of the random array is 2X the required length.
         We can use the extra elements in "member" calls. 
         Also the current size of the linked list can be used accordingly.
@@ -257,7 +258,7 @@ void * linkedList_worker_rwlock(void* args){
 }
 
 double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_count){
-    
+    srand(time(NULL));
     /*  Size of the random array is 2X the required length.
         We can use the extra elements in "member" calls. 
         Also the current size of the linked list can be used accordingly.
@@ -319,7 +320,6 @@ double RWLockMethod(int n_init, int m_member, int m_ins, int m_del, int thread_c
 int main (int argc, char* argv[]){
     //printf("%d ", argc);
     if(argc != 6) Usage(argv[0]);
-    srand(time(NULL));
     
     /*Parameters of the program*/
     int n_init = 1000;
