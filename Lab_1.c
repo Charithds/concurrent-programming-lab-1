@@ -49,16 +49,6 @@ void init_linked_list(struct node **head, int length, int *random_numbers_array)
     }
 }
 
-// Returns the next insert element 
-int get_insert_element(){
-    return random_numbers_array[(*random_array_current_pos)++];
-}
-
-// Returns the next delete element
-int get_delete_element(){
-    return random_numbers_array[rand()%((*random_array_current_pos)--)];
-}
-
 void Usage (char* prog_name) {
    fprintf(stderr, "Usage: %s <mMember> <mInsert> <mDelete> <thread_count> <prog_type (M,RWL or S)>\n", prog_name);
    printf("For the serial program <thread_count> will be ignored.");
@@ -103,9 +93,9 @@ double SerialMethod(){
         if(prob < m_member){
             struct node *element = member(head, rand()%MAX_NUM);
         } else if(prob < m_member+m_ins){
-            insert(&head, get_insert_element());
+            insert(&head, random_numbers_array[(*random_array_current_pos)++]);
         }else{
-            struct node *element = delete(&head, get_delete_element());
+            struct node *element = delete(&head, random_numbers_array[rand()%((*random_array_current_pos)--)]);
             if(!element){
                 // printf("im here");
                 element = deleteFirst(&head);
@@ -137,11 +127,11 @@ void * linkedList_worker_mutex(void* args){
             pthread_mutex_unlock(&lock);
         } else if(prob < m_member+m_ins){
             pthread_mutex_lock(&lock);
-            insert(&head, get_insert_element());
+            insert(&head, random_numbers_array[(*random_array_current_pos)++]);
             pthread_mutex_unlock(&lock);
         }else{
             pthread_mutex_lock(&lock);
-            struct node *element = delete(&head, get_delete_element());
+            struct node *element = delete(&head, random_numbers_array[rand()%((*random_array_current_pos)--)]);
             if(!element){
                 element = deleteFirst(&head);
             }
@@ -205,11 +195,11 @@ void * linkedList_worker_rwlock(void* args){
             pthread_rwlock_unlock(&rwlock);
         } else if(prob < m_member + m_ins){
             pthread_rwlock_wrlock(&rwlock);
-            insert(&head, get_insert_element());
+            insert(&head, random_numbers_array[(*random_array_current_pos)++]);
             pthread_rwlock_unlock(&rwlock);
         }else{
             pthread_rwlock_wrlock(&rwlock);
-            struct node *element = delete(&head, get_delete_element());
+            struct node *element = delete(&head, random_numbers_array[rand()%((*random_array_current_pos)--)]);
             if(!element){
                 element = deleteFirst(&head);
             }
