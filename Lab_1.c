@@ -96,8 +96,9 @@ void calculateStats(double * elapsedTimes, int count, double *stats){
 
 double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     srand(time(NULL));
-    int random_array_length = 2 * (n_init + m_ins);
-    int total_ops = m_ins+m_del+m_member;
+    
+    random_array_length = 2 * (n_init + m_ins);
+    total_ops = m_ins+m_del+m_member;
 
     random_array_current_pos = malloc(sizeof(int));
     *random_array_current_pos=0;
@@ -117,11 +118,11 @@ double SerialMethod(int n_init, int m_member, int m_ins, int m_del){
     start = clock();
     for(int i = 0; i < total_ops; i++){
         if(op_seq[i] == OP_MEMBER){
-            struct node *element = member(head, get_member_element(random_numbers_array, random_array_length));
+            struct node *element = member(head, get_member_element());
         } else if(op_seq[i] == OP_INSERT){
-            insert(&head, get_insert_element(random_numbers_array, random_array_current_pos));
+            insert(&head, get_insert_element());
         }else if(op_seq[i] == OP_DEL){
-            struct node *element = delete(&head, get_delete_element(random_numbers_array, random_array_current_pos));
+            struct node *element = delete(&head, get_delete_element());
             if(!element){
                 // printf("im here");
                 element = deleteFirst(&head);
