@@ -68,7 +68,7 @@ int get_delete_element(){
 
 // Returns the next member element
 int get_member_element(){
-    return random_numbers_array[rand()%random_array_length];
+    return random_numbers_array[5];
 }
 
 void Usage (char* prog_name) {
