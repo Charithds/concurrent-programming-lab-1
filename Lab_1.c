@@ -80,7 +80,7 @@ double SerialMethod(){
     
     random_numbers_array = malloc(sizeof(int)*random_array_length);
     for(int i = 0; i < random_array_length; i++){
-        random_numbers_array[i] = rand();
+        random_numbers_array[i] = rand()%MAX_NUM;
     }
     
     init_linked_list(&head, n_init, random_numbers_array);
@@ -123,7 +123,7 @@ void * linkedList_worker_mutex(void* args){
         int prob = rand()%total_ops;
         if(prob < m_member){
             pthread_mutex_lock(&lock);
-            struct node *element = member(head, rand()%65536);
+            struct node *element = member(head, rand()%MAX_NUM);
             pthread_mutex_unlock(&lock);
         } else if(prob < m_member+m_ins){
             pthread_mutex_lock(&lock);
@@ -148,7 +148,7 @@ double MutexMethod(){
     
     random_numbers_array = malloc(sizeof(int)*random_array_length);
     for(int i = 0; i < random_array_length; i++){
-        random_numbers_array[i] = rand();
+        random_numbers_array[i] = rand()%MAX_NUM;
     }
     
     init_linked_list(&head, n_init, random_numbers_array);
@@ -216,7 +216,7 @@ double RWLockMethod(){
     
     random_numbers_array = malloc(sizeof(int)*random_array_length);
     for(int i = 0; i < random_array_length; i++){
-        random_numbers_array[i] = rand();
+        random_numbers_array[i] = rand()%MAX_NUM;
     }
     
     init_linked_list(&head, n_init, random_numbers_array);
