@@ -270,7 +270,8 @@ int main (int argc, char* argv[]){
     
     /*Parameters of the program*/
     n_init = 1000;
-    m_ins = atoi(argv[2]), m_del = atoi(argv[3]), m_member = atoi(argv[1]);
+    total_ops = atoi(argv[1]);
+    m_ins = (int)(total_ops * atof(argv[2])), m_del = (int)(total_ops * atof(argv[3])), m_member = (int)(total_ops * atof(argv[1]));
     thread_count = atoi(argv[4]);
     char *program = argv[5];
 
